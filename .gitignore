@@ -1,0 +1,7 @@
+users.txt
+log.txt
+.vscode/
+dist/
+chrome-win/
+build/
+__pycache__

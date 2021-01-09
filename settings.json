@@ -1,0 +1,6 @@
+{
+    "retrymax":2,
+    "logsucceeded":true,
+    "print2con":true,
+    "save_path": "screenshots\\"
+}
