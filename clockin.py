@@ -14,7 +14,7 @@ printToConsole=True
 silent=False
 chromeBinaryPath=None
 logSucceededRecord=True
-savePath="screenshots"
+savePath=None
 loginURL = 'https://pass.sdu.edu.cn/cas/login'
 requestURL_left = 'https://scenter.sdu.edu.cn/tp_fp/view?m=fp#from=hall&serveID=41d9ad4a-f681-4872-a400-20a3b606d399&act=fp/serveapply'
 requestURL_not_left = 'https://scenter.sdu.edu.cn/tp_fp/view?m=fp#from=hall&serveID=e027d752-0cbc-4d83-a9d5-1692441e8252&act=fp/serveapply'
@@ -63,6 +63,8 @@ if chromeBinaryPath:
     options.binary_location= chromeBinaryPath
 
 def save_screenshot(driver,user):
+    if not savePath:
+        return
     try:
         driver.get("about:blank")
         driver.get("https://scenter.sdu.edu.cn/tp_fp/view?m=fp#act=fp/myserviceapply/indexFinish")
@@ -105,7 +107,6 @@ if __name__ == '__main__':
                         alert.accept()
                         save_screenshot(driver,user)
                         if logSucceededRecord:writelog(f"Already clocked in, user {user['username']} , time {datetime.now()}\n")
-
                         break
                     except:
                         sleep(2)
