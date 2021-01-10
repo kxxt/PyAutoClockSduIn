@@ -3,9 +3,11 @@
 这是一个用python编写的自动打卡程序，使用selenium框架。
 > Made by a sdu(wh) student for sdu/wh students.
 
+注意： 当前只测试过离校生类型的打卡， 留校生类型的打卡未经过测试， 很可能（几乎一定）不工作
+
 ## 下载
 
-敬请期待
+参见 Release 界面
 
 ## 使用方法
 
