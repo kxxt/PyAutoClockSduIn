@@ -1,4 +1,4 @@
-# PyAutoClockSduIn For Shandong University
+# 山东大学自动疫情打卡程序
 
 这是一个用python编写的自动打卡程序，使用selenium框架。
 > Made by a sdu(wh) student for sdu/wh students.
@@ -17,7 +17,7 @@
 > 请在`settings.json`文件中添加一条
 > `"chrome":"到你的chrome.exe的路径(请勿忘记转义)"`
 
-在程序目录下新建users.txt , 将学号写入users.txt,一行一个.
+在程序目录下新建users.json , 按下文的格式输入学生信息!
 
 双击运行`clockin.exe`
 
@@ -25,12 +25,24 @@
 ![允许程序通过防火墙](alert.png)
 
 程序执行过程中没有异常即打卡成功
+
+建议配合[AutoSdu](https://github.com/kxxt/AutoSdu)使用 , 可以方便的获得打卡截图转发到QQ群
+
 ### Python 脚本
 
 将信息写入users.json,按以下格式:
 
 ```json
 [
+    {
+        "username":"学号",
+        "password":"密码",
+        "left":true,
+        "province":"省",
+        "city":"市",
+        "district":"区",
+        "address":"详细地址"
+    },
     {
         "username":"学号",
         "password":"密码",
