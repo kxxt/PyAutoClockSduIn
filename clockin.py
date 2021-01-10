@@ -6,13 +6,15 @@ import traceback
 import platform
 import json
 from selenium.webdriver.common.by import By
+from os import path
+from datetime import datetime
 # fallback values for settings.json
 retrymax=2
 printToConsole=True
-hasLeftSchool=True
 silent=False
 chromeBinaryPath=None
 logSucceededRecord=True
+savePath="screenshots"
 loginURL = 'https://pass.sdu.edu.cn/cas/login'
 requestURL_left = 'https://scenter.sdu.edu.cn/tp_fp/view?m=fp#from=hall&serveID=41d9ad4a-f681-4872-a400-20a3b606d399&act=fp/serveapply'
 requestURL_not_left = 'https://scenter.sdu.edu.cn/tp_fp/view?m=fp#from=hall&serveID=e027d752-0cbc-4d83-a9d5-1692441e8252&act=fp/serveapply'
@@ -36,7 +38,7 @@ try:
     if "silent" in settings:silent= settings["silent"]
     if "logsucceeded" in settings:logSucceededRecord= settings["logsucceeded"]
     if "print2con" in settings:printToConsole= settings["print2con"]
-    if "hasLeftSchool" in settings:hasLeftSchool= settings["hasLeftSchool"]
+    if "save_path" in settings:savePath= settings["save_path"]
 except:
     if printToConsole:print("settings.json not found or corrupted. Use default settings.")
 finally:s.close()
@@ -48,8 +50,8 @@ if not users:
     sleep(5)
     exit(1)
 options=webdriver.ChromeOptions()
-mobileEmulation = {'deviceName': 'iPhone X'}
-# options.add_experimental_option('mobileEmulation', mobileEmulation)
+#mobileEmulation = {'deviceName': 'iPhone X'}
+#options.add_experimental_option('mobileEmulation', mobileEmulation)
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-gpu')
 options.add_argument('--hide-scrollbars')
@@ -59,64 +61,96 @@ if silent:
     options.add_argument('--headless')
 if chromeBinaryPath:
     options.binary_location= chromeBinaryPath
-for user in users:
-    for i in range(retrymax):
-        try:
-            driver=webdriver.Chrome( "chromedriver.exe" if platform.system()=="Windows" else"./chromedriver",chrome_options=options)
-            driver.get(loginURL)
-            driver.maximize_window()
-            driver.implicitly_wait(6)
-            username=driver.find_element_by_id("un")
-            password=driver.find_element_by_id("pd")
-            username.send_keys(user['username'])
-            password.send_keys(user['password'])
-            driver.implicitly_wait(2)
-            submit = driver.find_element_by_id("index_login_btn")
-            submit.click()
-            driver.implicitly_wait(5)
-            driver.get(requestURL_left if user['left'] else requestURL_not_left)
-            driver.implicitly_wait(5)
-            already_clocked_in = False
-            for t in range(10):
-                try:
-                    alert = driver.switch_to.alert
-                    already_clocked_in = True
-                    break
-                except:
-                    sleep(2)
-            if already_clocked_in: break
-            driver.find_element(By.CSS_SELECTOR, ".layui-layer-content #mag_take_cancel").click()
-            sleep(3)
-            driver.switch_to.frame(1)
-            driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(2) .filter-option").click()
-            driver.find_element(By.LINK_TEXT, user['province']).click()
 
-            driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(5) .filter-option").click()
-            driver.find_element(By.LINK_TEXT, user['city']).click()
+def save_screenshot(driver,user):
+    try:
+        driver.get("about:blank")
+        driver.get("https://scenter.sdu.edu.cn/tp_fp/view?m=fp#act=fp/myserviceapply/indexFinish")
+        driver.implicitly_wait(10)
+        js_top = "var q=document.documentElement.scrollTop=0"
+        driver.execute_script(js_top)
+        spath = path.join(savePath,user['username']+".png")
+        sleep(8)
+        succeeded=driver.save_screenshot(spath)
+        if not succeeded:
+            writelog(f"Screenshot of {user['username']} failed @ {datetime.now()} without specific error messages. Please check if the path exists or if you have permission issues.")
+    except Exception as e:
+        writelog(f"===== Screenshot Error Begin @ {datetime.now()} =====")
+        writelog(f"Error occurred while taking or saving screenshot , User = {user['username']}.\nStack Trace:{traceback.format_exc()}\n")
+        writelog(f"===== Screenshot Error End @ {datetime.now()} =====")
 
-            driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(8) .filter-option").click()
-            driver.find_element(By.LINK_TEXT, user['district']).click()
+if __name__ == '__main__':
+    for user in users:
+        for i in range(retrymax):
+            try:
+                driver=webdriver.Chrome( "chromedriver.exe" if platform.system()=="Windows" else"./chromedriver",chrome_options=options)
+                driver.get(loginURL)
+                driver.set_window_size(375,812)
+                driver.implicitly_wait(6)
+                username=driver.find_element_by_id("un")
+                password=driver.find_element_by_id("pd")
+                username.send_keys(user['username'])
+                password.send_keys(user['password'])
+                driver.implicitly_wait(2)
+                submit = driver.find_element_by_id("index_login_btn")
+                submit.click()
+                driver.implicitly_wait(5)
+                driver.get(requestURL_left if user['left'] else requestURL_not_left)
+                driver.implicitly_wait(5)
+                already_clocked_in = False
+                for t in range(10):
+                    try:
+                        alert = driver.switch_to.alert
+                        already_clocked_in = True
+                        alert.accept()
+                        save_screenshot(driver,user)
+                        if logSucceededRecord:writelog(f"Already clocked in, user {user['username']} , time {datetime.now()}\n")
 
-            driver.find_element_by_id('DQJZDZ').send_keys(user['address'])
+                        break
+                    except:
+                        sleep(2)
+                if already_clocked_in: break
+                driver.find_element(By.CSS_SELECTOR, ".layui-layer-content #mag_take_cancel").click()
+                sleep(3)
+                driver.switch_to.frame(1)
 
-            promise = driver.find_element_by_name("GRCN_group")
-            promise.click()
+                dtn = datetime.now()
+                test_time = driver.find_element_by_id('CLSJ')
+                test_time.clear()
+                test_time.send_keys(dtn.strftime("%Y-%m-%d %H:%M:%S"))
 
-            driver.switch_to.parent_frame()
-            commit = driver.find_element_by_id('commit')
-            commit.click()
+                driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(2) .filter-option").click()
+                sleep(3)
+                driver.find_element(By.LINK_TEXT, user['province']).click()
 
-            # driver.save_screenshot('haha.png')
-            # driver.execute_script("a=document.getElementsByClassName(\"weui-btn_primary\")[0];a.click()")
-        except Exception as e:
-            writelog(f"===== Error Begin @ {datetime.now()} =====")
-            writelog(f"Error occurred while clocking in ,try number = {i}, User = {user}.\nStack Trace:{traceback.format_exc()}\n")
-            writelog(f"===== Error End  @ {datetime.now()}  =====")
-        else:
-            if logSucceededRecord:writelog(f"Success , user {user} , time {datetime.now()}\n")
-            break
-        finally:
-            sleep(5)
-            driver.quit()
-            
-log.close()
+                driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(5) .filter-option").click()
+                sleep(3)
+                driver.find_element(By.LINK_TEXT, user['city']).click()
+
+                driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(8) .filter-option").click()
+                sleep(3)
+                driver.find_element(By.LINK_TEXT, user['district']).click()
+
+                driver.find_element_by_id('DQJZDZ').send_keys(user['address'])
+
+               
+
+                promise = driver.find_element_by_name("GRCN_group")
+                promise.click()
+
+
+                driver.switch_to.parent_frame()
+                commit = driver.find_element_by_id('commit')
+                commit.click()
+                save_screenshot(driver,user)
+            except Exception as e:
+                writelog(f"===== ClockingIn Error Begin @ {datetime.now()} =====")
+                writelog(f"Error occurred while clocking in ,retrying cnt = {i}, User = {user['username']}.\nStack Trace:{traceback.format_exc()}\n")
+                writelog(f"===== ClockingIn Error End  @ {datetime.now()}  =====")
+            else:
+                if logSucceededRecord:writelog(f"Clocked in , user {user['username']} , time {datetime.now()}\n")
+                break
+            finally:
+                sleep(5)
+                driver.quit()
+    log.close()
