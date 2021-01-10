@@ -1,4 +1,5 @@
 {
+    "chrome":"chrome-win\\chrome.exe",
     "retrymax":2,
     "logsucceeded":true,
     "print2con":true
