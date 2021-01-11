@@ -1,9 +1,12 @@
 # 山东大学自动疫情打卡程序
 
+---
+## Disclaimer
+### THIS SOFTWARE IS PROVIDED "AS-IS" , WITHOUT ANY EXPRESSED OR IMPLIED WARRANTY .USE IT AT YOUR OWN RISK !
+---
+
 这是一个用python编写的自动打卡程序，使用selenium框架。
 > Made by a sdu(wh) student for sdu/wh students.
-
-注意： 当前只测试过离校生类型的打卡， 留校生类型的打卡未经过测试， 很可能（几乎一定）不工作
 
 ## 下载
 
@@ -76,6 +79,25 @@ python3 clockin.py
 - `chrome` : 自己指定Chrome浏览器路径 , 常用于Windows下
 - `logsucceeded` : 将成功打卡的记录也进行Log
 - `save_path`: 截图保存位置 (功能开发中)
+
+## 在服务器上的配置
+
+### Serverside
+
+- 服务器需要具备`python3`,`chrome`,`pip3 install selenium`.
+- 如果需要配置打卡截图服务则需要安装至少一个中文字体.
+- 设置`settings.json`中`silent`为`true`,`save_path`为保存打卡截图的文件夹
+- `settings.json`中其他参数按需修改
+- 填写`users.json`
+- 赋予chromedriver执行权限, `chmod +x chromedriver`
+- 设置保存打卡截图文件夹的权限 , 确保程序可以写入 , Web浏览器上可以打开此文件夹内的文件.
+- 设置cornjob, 定时执行打卡任务
+  
+### Clientside
+
+- 下载[AutoSdu](https://github.com/kxxt/AutoSdu)
+- 设置 `URL` 为到服务器截图文件夹的网址
+- 设置用户名为学号
 
 ## 应用场景
 
