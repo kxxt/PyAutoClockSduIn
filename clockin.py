@@ -114,26 +114,25 @@ if __name__ == '__main__':
                 driver.find_element(By.CSS_SELECTOR, ".layui-layer-content #mag_take_cancel").click()
                 sleep(3)
                 driver.switch_to.frame(1)
+                if user['left']:
+                    dtn = datetime.now()
+                    test_time = driver.find_element_by_id('CLSJ')
+                    test_time.clear()
+                    test_time.send_keys(dtn.strftime("%Y-%m-%d %H:%M:%S"))
 
-                dtn = datetime.now()
-                test_time = driver.find_element_by_id('CLSJ')
-                test_time.clear()
-                test_time.send_keys(dtn.strftime("%Y-%m-%d %H:%M:%S"))
+                    driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(2) .filter-option").click()
+                    sleep(3)
+                    driver.find_element(By.LINK_TEXT, user['province']).click()
 
-                driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(2) .filter-option").click()
-                sleep(3)
-                driver.find_element(By.LINK_TEXT, user['province']).click()
+                    driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(5) .filter-option").click()
+                    sleep(3)
+                    driver.find_element(By.LINK_TEXT, user['city']).click()
 
-                driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(5) .filter-option").click()
-                sleep(3)
-                driver.find_element(By.LINK_TEXT, user['city']).click()
+                    driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(8) .filter-option").click()
+                    sleep(3)
+                    driver.find_element(By.LINK_TEXT, user['district']).click()
 
-                driver.find_element(By.CSS_SELECTOR, ".btn-group:nth-child(8) .filter-option").click()
-                sleep(3)
-                driver.find_element(By.LINK_TEXT, user['district']).click()
-
-                driver.find_element_by_id('DQJZDZ').send_keys(user['address'])
-
+                    driver.find_element_by_id('DQJZDZ').send_keys(user['address'])
                
 
                 promise = driver.find_element_by_name("GRCN_group")
