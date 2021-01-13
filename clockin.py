@@ -1,13 +1,12 @@
 import selenium
 from selenium import webdriver
 from time import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 import traceback
 import platform
 import json
 from selenium.webdriver.common.by import By
 from os import path
-from datetime import datetime
 # fallback values for settings.json
 retrymax=2
 printToConsole=True
@@ -115,7 +114,7 @@ if __name__ == '__main__':
                 sleep(3)
                 driver.switch_to.frame(1)
                 if user['left']:
-                    dtn = datetime.now()
+                    dtn = datetime.now() - timedelta(days=1) 
                     test_time = driver.find_element_by_id('CLSJ')
                     test_time.clear()
                     test_time.send_keys(dtn.strftime("%Y-%m-%d %H:%M:%S"))
