@@ -132,6 +132,8 @@ if __name__ == '__main__':
                     driver.find_element(By.LINK_TEXT, user['district']).click()
 
                     driver.find_element_by_id('DQJZDZ').send_keys(user['address'])
+
+                    driver.find_element_by_id('DRTW').send_keys(user['temperature'])
                
 
                 promise = driver.find_element_by_name("GRCN_group")

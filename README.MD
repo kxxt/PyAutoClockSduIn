@@ -47,7 +47,8 @@
         "province":"省",
         "city":"市",
         "district":"区",
-        "address":"详细地址"
+        "address":"详细地址",
+        "temperature":"36.5"
     },
     {
         "username":"学号",
@@ -56,7 +57,8 @@
         "province":"省",
         "city":"市",
         "district":"区",
-        "address":"详细地址"
+        "address":"详细地址",
+        "temperature":"36.6"
     }
 ]
 ```
