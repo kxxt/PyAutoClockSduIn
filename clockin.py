@@ -114,6 +114,7 @@ if __name__ == '__main__':
                 sleep(3)
                 driver.switch_to.frame(1)
                 if user['left']:
+                    driver.implicitly_wait(10)
                     dtn = datetime.now() - timedelta(days=1) 
                     test_time = driver.find_element_by_id('CLSJ')
                     test_time.clear()
@@ -136,8 +137,8 @@ if __name__ == '__main__':
                     driver.find_element_by_id('DRTW').send_keys(user['temperature'])
                
 
-                promise = driver.find_element_by_name("GRCN_group")
-                promise.click()
+                # promise = driver.find_element_by_name("GRCN_group")
+                # promise.click()
 
 
                 driver.switch_to.parent_frame()
