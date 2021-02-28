@@ -135,8 +135,11 @@ if __name__ == '__main__':
                     driver.find_element_by_id('DQJZDZ').send_keys(user['address'])
 
                     driver.find_element_by_id('DRTW').send_keys(user['temperature'])
-               
-
+                else:
+                    driver.implicitly_wait(10)
+                    driver.find_element_by_id('QYRZWTW').send_keys(user['temperature'])
+                    driver.find_element_by_id('ZWTW').send_keys(user['temperature'])
+                    driver.find_element_by_id('ZCTW').send_keys(user['temperature'])
                 # promise = driver.find_element_by_name("GRCN_group")
                 # promise.click()
 
